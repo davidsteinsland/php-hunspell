@@ -8,5 +8,5 @@ Test begin
 $hspell = new Hunspell();
 
 ?>
---EXPECT--
-Warning: Hunspell::__construct() expects exactly 2 parameters, 0 given in /Users/david/salt/hunspell-ext/tests/001.php on line 3
+--EXPECTF--
+Warning: Hunspell::__construct() expects exactly 2 parameters, 0 given in %s/001.php on line %d
