@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 addons:
   apt:
     packages:
@@ -19,7 +19,7 @@ env:
     - REPORT_EXIT_STATUS=1
 script:
   - phpize
-  - ./configure --enable-developer-flags --enable-coverage
+  - ./configure --enable-developer-flags
   - make all -j4
   - sudo make install
   - wget -O run-tests.php https://raw.githubusercontent.com/php/php-src/master/run-tests.php
