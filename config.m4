@@ -13,6 +13,7 @@ if test $PHP_HUNSPELL != "no"; then
     HUNSPELL_INC=`$PKG_CONFIG --cflags hunspell`
     HUNSPELL_LIB=`$PKG_CONFIG --libs hunspell`
     HUNSPELL_VER=`$PKG_CONFIG hunspell --modversion`
+    LIBNAME=`$PKG_CONFIG --libs hunspell | awk -F'-l' '{print $2}'`
 
     AC_MSG_RESULT(version $HUNSPELL_VER found)
   else
@@ -22,6 +23,13 @@ if test $PHP_HUNSPELL != "no"; then
   PHP_EVAL_INCLINE($HUNSPELL_INC)
   PHP_EVAL_LIBLINE($HUNSPELL_LIB, HUNSPELL_SHARED_LIBADD)
   AC_DEFINE(HAVE_LIBHUNSPELL, 1, [Have libhunspell])
+
+  PHP_CHECK_LIBRARY($LIBNAME, Hunspell_add_dic, [
+    AC_DEFINE(HAVE_LIBHUNSPELL_ADD_DIC, 1, [Have Hunspell_add_dic])
+  ], [
+    AC_MSG_WARN(Hunspell_add_dic not found)
+    AC_DEFINE(HAVE_LIBHUNSPELL_ADD_DIC, 0, [Have Hunspell_add_dic])
+  ])
 
   PHP_SUBST(HUNSPELL_SHARED_LIBADD)
   PHP_NEW_EXTENSION(hunspell, php_hunspell.c, $ext_shared)

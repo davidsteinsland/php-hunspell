@@ -69,6 +69,7 @@ PHP_METHOD(Hunspell, __construct) {
 }
 
 PHP_METHOD(Hunspell, addDictionary) {
+#if HAVE_LIBHUNSPELL_ADD_DIC
   hunspell_object* hunspell;
 
   char* dpath;
@@ -85,6 +86,9 @@ PHP_METHOD(Hunspell, addDictionary) {
   }
 
   RETURN_TRUE;
+#else
+  RETURN_FALSE;
+#endif
 }
 
 
