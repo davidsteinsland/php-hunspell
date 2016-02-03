@@ -1,0 +1,27 @@
+sudo: false
+addons:
+  apt:
+    packages:
+      - libhunspell-1.3-0
+      - hunspell-en-us
+      - libhunspell-dev
+      - gdb
+      - valgrind
+language: php
+php:
+  - 7.0
+  - 5.6
+  - 5.5
+  - 5.4
+env:
+  global:
+    - TEST_PHP_ARGS="-q -s output.txt -g XFAIL,FAIL,BORK,WARN,LEAK,SKIP -x --show-diff"
+    - REPORT_EXIT_STATUS=1
+script:
+  - phpize
+  - ./configure --enable-developer-flags --enable-coverage
+  - make all -j4
+  - sudo make install
+  - wget -O run-tests.php https://raw.githubusercontent.com/php/php-src/master/run-tests.php
+  - echo "extension=hunspell.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+  - make test
