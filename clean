@@ -1,0 +1,11 @@
+#!/bin/bash
+
+rm -rf build
+rm -rf autom4te.cache
+rm -rf include
+rm -rf modules
+
+rm -f .deps acinclude.m4 aclocal.m4 config.guess config.h config.h.in config.h.in~ config.log config.nice config.status config.sub
+rm -f configure configure.in install-sh libtool ltmain.sh Makefile Makefile.fragments Makefile.objects Makefile.global
+rm -f missing mkinstalldirs
+rm -f run-tests.php

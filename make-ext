@@ -1,0 +1,6 @@
+#!/bin/bash
+
+make clean
+./clean && phpize && ./configure
+
+make
