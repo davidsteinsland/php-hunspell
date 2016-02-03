@@ -13,6 +13,8 @@ php:
   - 5.6
   - 5.5
   - 5.4
+notifications:
+  email: false
 env:
   global:
     - TEST_PHP_ARGS="-q -s output.txt -g XFAIL,FAIL,BORK,WARN,LEAK,SKIP -x --show-diff"
