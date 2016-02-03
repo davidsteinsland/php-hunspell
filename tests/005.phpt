@@ -7,9 +7,9 @@ Test begin
 
 $hspell = new Hunspell(dirname(__DIR__) . '/dicts/nb_NO.aff', dirname(__DIR__) . '/dicts/nb_NO.dic');
 
-var_dump($hspell->checkSpelling('Trafikkkork'));
-var_dump($hspell->suggestSpelling('Trafikkkork'));
-var_dump($hspell->suggestSpelling('Trafikk kork'));
+var_dump($hspell->spell('Trafikkkork'));
+var_dump($hspell->suggest('Trafikkkork'));
+var_dump($hspell->suggest('Trafikk kork'));
 
 unset($hspell);
 ?>

@@ -87,7 +87,8 @@ PHP_METHOD(Hunspell, addDictionary) {
   RETURN_TRUE;
 }
 
-PHP_METHOD(Hunspell, checkSpelling) {
+
+static void _hunspell_get_result(INTERNAL_FUNCTION_PARAMETERS, int mode) {
   hunspell_object* hunspell;
 
   char* word;
@@ -103,14 +104,35 @@ PHP_METHOD(Hunspell, checkSpelling) {
 
   hunspell = (hunspell_object*)zend_object_store_get_object(getThis() TSRMLS_CC);
 
-  if (Hunspell_spell(hunspell->hspell, word) == 0) {
+  int res;
+
+  switch (mode) {
+    case 0:
+      res = Hunspell_add(hunspell->hspell, word) != 0;
+      break;
+    case 1:
+      res = Hunspell_spell(hunspell->hspell, word) == 0;
+      break;
+    default:
+      RETURN_FALSE;
+  }
+
+  if (res) {
     RETURN_FALSE;
   }
 
   RETURN_TRUE;
 }
 
-PHP_METHOD(Hunspell, suggestSpelling) {
+PHP_METHOD(Hunspell, add) {
+  _hunspell_get_result(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
+}
+
+PHP_METHOD(Hunspell, spell) {
+  _hunspell_get_result(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
+}
+
+static void _hunspell_get_results(INTERNAL_FUNCTION_PARAMETERS, int mode) {
   hunspell_object* hunspell;
 
   char* word;
@@ -127,7 +149,64 @@ PHP_METHOD(Hunspell, suggestSpelling) {
   hunspell = (hunspell_object*)zend_object_store_get_object(getThis() TSRMLS_CC);
 
   char** suggestions;
-  int ns = Hunspell_suggest(hunspell->hspell, &suggestions, word);
+  int ns;
+
+  switch (mode) {
+    case 0:
+      ns = Hunspell_suggest(hunspell->hspell, &suggestions, word);
+      break;
+    case 1:
+      ns = Hunspell_analyze(hunspell->hspell, &suggestions, word);
+      break;
+    case 2:
+      ns = Hunspell_stem(hunspell->hspell, &suggestions, word);
+      break;
+    default:
+      RETURN_FALSE;
+      break;
+  }
+
+  array_init_size(return_value, ns);
+
+  int i;
+  for (i = 0; i < ns; ++i) {
+    add_next_index_string(return_value, suggestions[i], 1);
+  }
+  Hunspell_free_list(hunspell->hspell, &suggestions, ns);
+}
+
+PHP_METHOD(Hunspell, suggest) {
+  _hunspell_get_results(INTERNAL_FUNCTION_PARAM_PASSTHRU, 0);
+}
+
+PHP_METHOD(Hunspell, analyze) {
+  _hunspell_get_results(INTERNAL_FUNCTION_PARAM_PASSTHRU, 1);
+}
+
+PHP_METHOD(Hunspell, stem) {
+  _hunspell_get_results(INTERNAL_FUNCTION_PARAM_PASSTHRU, 2);
+}
+
+PHP_METHOD(Hunspell, generate) {
+  hunspell_object* hunspell;
+
+  char* word1;
+  int word1_len = 0;
+  char* word2;
+  int word2_len = 0;
+
+  if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &word1, &word1_len, &word2, &word2_len) != SUCCESS) {
+    RETURN_FALSE;
+  }
+
+  if (word1_len == 0 || word2_len == 0) {
+    RETURN_FALSE;
+  }
+
+  hunspell = (hunspell_object*)zend_object_store_get_object(getThis() TSRMLS_CC);
+
+  char** suggestions;
+  int ns = Hunspell_generate(hunspell->hspell, &suggestions, word1, word2);
 
   array_init_size(return_value, ns);
 
@@ -141,8 +220,12 @@ PHP_METHOD(Hunspell, suggestSpelling) {
 static const zend_function_entry hunspell_methods[] = {
   PHP_ME(Hunspell, __construct,     NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
   PHP_ME(Hunspell, addDictionary,   NULL, ZEND_ACC_PUBLIC)
-  PHP_ME(Hunspell, checkSpelling,   NULL, ZEND_ACC_PUBLIC)
-  PHP_ME(Hunspell, suggestSpelling, NULL, ZEND_ACC_PUBLIC)
+  PHP_ME(Hunspell, add,             NULL, ZEND_ACC_PUBLIC)
+  PHP_ME(Hunspell, spell,           NULL, ZEND_ACC_PUBLIC)
+  PHP_ME(Hunspell, suggest,         NULL, ZEND_ACC_PUBLIC)
+  PHP_ME(Hunspell, analyze,         NULL, ZEND_ACC_PUBLIC)
+  PHP_ME(Hunspell, stem,            NULL, ZEND_ACC_PUBLIC)
+  PHP_ME(Hunspell, generate,        NULL, ZEND_ACC_PUBLIC)
   PHP_FE_END
 };
 

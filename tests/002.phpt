@@ -7,17 +7,17 @@ Test begin
 
 $hspell = new Hunspell(dirname(__DIR__) . '/dicts/nb_NO.aff', dirname(__DIR__) . '/dicts/nb_NO.dic');
 
-var_dump($hspell->checkSpelling('Hello'));
+var_dump($hspell->spell('Hello'));
 
 $hspell = new Hunspell(dirname(__DIR__) . '/dicts/en_US.aff', dirname(__DIR__) . '/dicts/en_US.dic');
-var_dump($hspell->checkSpelling('Motorize'));
+var_dump($hspell->spell('Motorize'));
 
-var_dump($hspell->checkSpelling('Motorise'));
-var_dump($hspell->suggestSpelling('Motorise'));
+var_dump($hspell->spell('Motorise'));
+var_dump($hspell->suggest('Motorise'));
 
 
-var_dump($hspell->checkSpelling('thrusters'));
-var_dump($hspell->suggestSpelling('thrusters'));
+var_dump($hspell->spell('thrusters'));
+var_dump($hspell->suggest('thrusters'));
 
 unset($hspell);
 ?>

@@ -7,8 +7,8 @@ Test begin
 
 $hspell = new Hunspell(dirname(__DIR__) . '/dicts/nb_NO.aff', dirname(__DIR__) . '/dicts/nb_NO.dic');
 
-var_dump($hspell->checkSpelling('Kontor'));
-var_dump($hspell->suggestSpelling('Kontor'));
+var_dump($hspell->spell('Kontor'));
+var_dump($hspell->suggest('Kontor'));
 
 unset($hspell);
 ?>
