@@ -14,6 +14,16 @@ make
 sudo make install
 ```
 
+# Test
+
+```
+phpize
+./configure
+make
+
+./run-tests.php -P -d extension=modules/hunspell.so -q
+```
+
 # API
 
 ## `Hunspell::__construct($affix, $dict)`
